@@ -1,0 +1,132 @@
+<html>
+<head>
+<title>Fender's Hacker GUI</title>
+<HTA:APPLICATION
+   ID="app"
+   APPLICATIONNAME="HackerGUI"
+   CAPTION="yes"
+   SHOWINTASKBAR="yes"
+   SCROLL="no"
+   WINDOWSTATE="normal"
+   INNERBORDER="no"
+   MAXIMIZEBUTTON="yes"
+   MINIMIZEBUTTON="yes"
+   SYSMENU="yes"
+   BORDER="thick"
+   RESIZE="yes"
+/>
+<script language="javascript">
+function sleep(ms){
+    var start = new Date().getTime();
+    while(new Date().getTime() - start < ms) { }
+}
+function tryActivate(shell){
+    var titles = [
+        "Command Prompt",
+        "Opdrachtprompt",
+        "Administrator: Command Prompt",
+        "Administrator: Opdrachtprompt",
+        "C:\\Windows\\system32\\cmd.exe"
+    ];
+    for(var i=0;i<titles.length;i++){
+        try{
+            if(shell.AppActivate(titles[i])) return true;
+        }catch(e){}
+    }
+    return false;
+}
+function startProgram(keuze){
+    try {
+        var shell = new ActiveXObject("WScript.Shell");
+        if(keuze=='1'){
+            shell.Run('powershell -WindowStyle Hidden -Command "Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show(\\\'Access Granted\\\',\\\'Hacker Mode\\\')"', 0);
+        }
+        else if(keuze=='2'){
+            shell.Run("calc.exe");
+        }
+        else if(keuze=='3'){
+            shell.Run("cmd.exe", 1, false);
+            var activated = false;
+            for(var attempt=0; attempt<20; attempt++){
+                if(tryActivate(shell)){
+                    activated = true;
+                    break;
+                }
+                                sleep(2500);
+            }
+            if(activated){
+                shell.SendKeys("color a && psping -i 0 -n 1000 127.0.0.1{ENTER}");
+            }
+        }
+    } catch(e) {
+        alert("Fout: " + e.message);
+    }
+}
+function openCmdOnly(){
+    try {
+        var shell = new ActiveXObject("WScript.Shell");
+        shell.Run("cmd.exe", 1, false);
+    } catch(e) {
+        alert("Fout: " + e.message);
+    }
+}
+function closeApp(){ window.close(); }
+</script>
+<style>
+body {
+    background-color: #0a0a0a;
+    color: #00ff66;
+    font-family: Consolas, monospace;
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+    position: relative;
+}
+h2 {
+    text-shadow: 0 0 10px #00ff66;
+    margin: 0 0 12px 0;
+}
+button {
+    background-color: #111;
+    color: #00ff66;
+    border: 1px solid #00ff66;
+    padding: 10px 20px;
+    margin: 5px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Consolas, monospace;
+    transition: all 0.2s ease;
+}
+button:hover {
+    background-color: #00ff66;
+    color: #000;
+    box-shadow: 0 0 10px #00ff66;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 600px;
+}
+.exit-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    padding: 10px 14px;
+    border-radius: 6px;
+}
+</style>
+</head>
+<body>
+<h2>Fender's Hacker Console</h2>
+<div class="container">
+    <button onclick="startProgram('1')">🧠 Run Message</button>
+    <button onclick="startProgram('2')">🧮 Calculator</button>
+    <button onclick="startProgram('3')">🌍 RUN CMD (ping)</button>
+    <button onclick="openCmdOnly()">🖥️ Open CMD Only</button>
+</div>
+
+<button class="exit-btn" onclick="closeApp()">❌ Exit</button>
+</body>
+</html>
